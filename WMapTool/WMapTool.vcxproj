@@ -56,7 +56,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Ws2_32.lib;D2D1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -82,6 +82,12 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="ChatWindow.h" />
+    <ClInclude Include="ClientMap.h" />
+    <ClInclude Include="DockingWindow.h" />
+    <ClInclude Include="DockingWindowRegistry.h" />
+    <ClInclude Include="Library.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="Preferences.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerConnection.h" />
@@ -92,6 +98,12 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="ChatWindow.cpp" />
+    <ClCompile Include="ClientMap.cpp" />
+    <ClCompile Include="DockingWindow.cpp" />
+    <ClCompile Include="DockingWindowRegistry.cpp" />
+    <ClCompile Include="Library.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Preferences.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerConnection.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -5,6 +5,7 @@
 #include "WMapTool.h"
 #include "Application.h"
 #include "Server.h"
+#include "Preferences.h"
 
 #define MAX_LOADSTRING 100
 
@@ -33,6 +34,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
+	Preferences preferences;
+	nCmdShow = preferences.GetNumericPreference(L"Show");
 	if (!InitInstance (hInstance, nCmdShow))
 	{
 		return FALSE;
@@ -101,8 +104,15 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    HWND hWnd;
    Application* application = Application::Instance();
+   int xPos, yPos;
+   int width, height;
+   Preferences preferences;
+   xPos = preferences.GetNumericPreference(L"xPos");
+   yPos = preferences.GetNumericPreference(L"yPos");
+   width = preferences.GetNumericPreference(L"Width");
+   height = preferences.GetNumericPreference(L"Height");
    hWnd = CreateWindow(application->szWindowClass, application->szTitle, WS_OVERLAPPEDWINDOW,
-	   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
+	   xPos, yPos,width, height, NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
    {
@@ -131,9 +141,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int wmId, wmEvent;
+	RECT location;
 	PAINTSTRUCT ps;
 	HDC hdc;
 	Application *application = Application::Instance();
+	Preferences preferences;
 
 	switch (message)
 	{
@@ -143,6 +155,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Parse the menu selections:
 		switch (wmId)
 		{
+		case ID_WINDOW_LIBRARY:
+			application->ShowLibrary();
+			break;
 		case IDM_ABOUT:
 			DialogBox(application->hInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
@@ -155,10 +170,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
+		//if (hWnd == application->hWnd)
+//			application->BeginPaint(ps);
 		EndPaint(hWnd, &ps);
+		//SendMessage(ChatWindow::Instance()->hWnd, WM_PAINT, 0, 0);
 		break;
+	case WM_SIZE:
+		switch (wParam)
+		{
+		case SIZE_MAXIMIZED:preferences.SaveNumericPreference(L"Show", (int)3); break;
+		case SIZE_MINIMIZED:break;
+		case SIZE_RESTORED:preferences.SaveNumericPreference(L"Show", (int)1); break;
+		}
+		return DefWindowProc(hWnd, message, wParam, lParam);
 	case WM_DESTROY:
+		GetWindowRect(application->hWnd, &location);
+		preferences.SaveNumericPreference(L"xPos", location.left);
+		preferences.SaveNumericPreference(L"yPos", location.top);
+		preferences.SaveNumericPreference(L"Width", location.right - location.left);
+		preferences.SaveNumericPreference(L"Height", location.bottom - location.top);
 		PostQuitMessage(0);
 		break;
 	default:
