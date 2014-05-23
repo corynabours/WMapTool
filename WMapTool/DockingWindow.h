@@ -6,7 +6,7 @@ class DockingWindow
 private:
 	TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 	ATOM RegisterPrivateClass(WNDPROC wndProc, LPCWSTR className);
-	LRESULT DockingWindow::BaseWndProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT BaseWndProc(UINT message, WPARAM wParam, LPARAM lParam);
 	LPCWSTR prefPrefix;
 	LRESULT onDestroy();
 	void OnWindowPosChanging(WINDOWPOS* lpwndPos);

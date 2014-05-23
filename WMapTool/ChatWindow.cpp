@@ -101,7 +101,7 @@ void ChatWindow::ProcessCommand()
 	int nLength = GetWindowTextLength(commandPanel);
 	TCHAR* text = new TCHAR[nLength+1];
 	memset(text, 0, sizeof(TCHAR)* (nLength+1));
-	GetWindowText(commandPanel, text, sizeof(TCHAR)*nLength);
+	GetWindowText(commandPanel, text, nLength);
 
 	//send the message to the server.
 	ServerConnection *serverConnection = ServerConnection::Instance();
@@ -109,7 +109,7 @@ void ChatWindow::ProcessCommand()
 
 	//then clear the command panel
 	SetWindowText(commandPanel, L"");
-	delete text;
+	delete[] text;
 }
 
 void ChatWindow::DisplayMessage(wchar_t *message)

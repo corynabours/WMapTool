@@ -60,6 +60,12 @@
     <ClInclude Include="DockingWindowRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FreeImage\Dist\FreeImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IconBrowser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -98,6 +104,9 @@
     <ClCompile Include="DockingWindowRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IconBrowser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WMapTool.rc">
@@ -109,6 +118,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="WMapTool.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\folder_closed.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

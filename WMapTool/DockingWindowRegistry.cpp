@@ -29,7 +29,7 @@ void DockingWindowRegistry::RegisterWindow(HWND hwnd, DockingWindow* dockingWind
 		{
 			tempWindowHandles[index] = windowHandles[index];
 		}
-		delete windowHandles;
+		delete[] windowHandles;
 		windowHandles = tempWindowHandles;
 
 		DockingWindow **tempDockingWindows = new DockingWindow*[windowCount + 1];
@@ -37,7 +37,7 @@ void DockingWindowRegistry::RegisterWindow(HWND hwnd, DockingWindow* dockingWind
 		{
 			tempDockingWindows[index] = dockingWindows[index];
 		}
-		delete dockingWindows;
+		delete[] dockingWindows;
 		dockingWindows = tempDockingWindows;
 
 		windowHandles[windowCount] = hwnd;

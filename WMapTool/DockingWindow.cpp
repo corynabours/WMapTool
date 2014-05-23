@@ -130,7 +130,7 @@ void DockingWindow::OnWindowPosChanging(WINDOWPOS* lpwndPos)
 {
 	//Get Desktop Size
 	RECT rectScreen;
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &rectScreen, 0);
+	if (SystemParametersInfo(SPI_GETWORKAREA, 0, &rectScreen, 0)==0) return;
 
 	//Screen Offsets for Snap
 	int m_nXOffset = 20;

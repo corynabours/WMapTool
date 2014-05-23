@@ -6,9 +6,11 @@
 #include "Application.h"
 #include "Server.h"
 #include "Preferences.h"
-
+#include "Commctrl.h"
+#include "FreeImage\Dist\FreeImage.h"
+#include <d3d9.h>
 #define MAX_LOADSTRING 100
-
+LPDIRECT3D9 d3d;
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -23,7 +25,13 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
- 	// TODO: Place code here.
+	InitCommonControls();
+	INITCOMMONCONTROLSEX commControls;
+	commControls.dwICC = ICC_TREEVIEW_CLASSES | ICC_LISTVIEW_CLASSES;
+	commControls.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	InitCommonControlsEx(&commControls);
+	FreeImage_Initialise();
+	d3d = Direct3DCreate9(D3D_SDK_VERSION);
 	MSG msg;
 	HACCEL hAccelTable;
 
@@ -52,7 +60,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			DispatchMessage(&msg);
 		}
 	}
-
+	FreeImage_DeInitialise();
 	return (int) msg.wParam;
 }
 

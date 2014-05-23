@@ -76,7 +76,7 @@ DWORD WINAPI ServerConnection::listenForServerMessages(LPVOID lpParam)
 			wchar_t * buffer = new wchar_t[iResult];
 			mbstowcs_s(&charsConverted,buffer,iResult, recvbuf, iResult);
 			chatWindow->DisplayMessage(buffer);
-			delete buffer;
+			delete[] buffer;
 		}
 		/*else if (iResult == 0)
 			printf("Connection closed\n");
@@ -98,7 +98,7 @@ void ServerConnection::Send(LPWSTR message)
 	char * buffer = new char[length];
 	wcstombs_s(&charsConverted,buffer,length,message,length-1);
 	int iResult = send(ConnectSocket, buffer, length, 0);
-	delete buffer;
+	delete[] buffer;
 	if (iResult == SOCKET_ERROR) {
 		closesocket(ConnectSocket);
 		ConnectSocket = INVALID_SOCKET;
