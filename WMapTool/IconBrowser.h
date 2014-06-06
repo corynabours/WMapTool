@@ -8,11 +8,13 @@ private:
 	HWND libraryImages = NULL;
 
 	void ClearFrame();
-	void AddImage(FIBITMAP* fiBitmap);
+	void AddImage(LPWSTR filename);
 	void GetNextImageRect(RECT *pRect);
-	void InitImagesImageList();
+	void InitGraphicsWindow();
+	void ResetGraphicsWindow();
 	ATOM RegisterImageList();
 	static LRESULT CALLBACK ImageListWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	LPWSTR locationBeingShown = NULL;
 public:
 	void ViewLocation(LPWSTR location);
 	void Move(int left, int top, int right, int bottom);
