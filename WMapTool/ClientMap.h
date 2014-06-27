@@ -7,10 +7,19 @@
 
 class ClientMap 
 {
+private:
+	void InitGraphicsWindow();
+	void ResetGraphicsWindow();
+	void ClearFrame();
+	ATOM RegisterClientMap();
+	HWND myWindow;
+	static LRESULT CALLBACK ClientMapWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static ClientMap* _instance;
 public:
 	ID2D1HwndRenderTarget *pRenderTarget;
 	void BeginPaint(PAINTSTRUCT &ps);
-public:
+	static ClientMap* Instance();
+private:
 	ClientMap();
 	~ClientMap();
 };

@@ -88,6 +88,7 @@
     <ClInclude Include="FreeImage\Dist\FreeImage.h" />
     <ClInclude Include="IconBrowser.h" />
     <ClInclude Include="Library.h" />
+    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Preferences.h" />
     <ClInclude Include="Resource.h" />
@@ -105,6 +106,7 @@
     <ClCompile Include="DockingWindowRegistry.cpp" />
     <ClCompile Include="IconBrowser.cpp" />
     <ClCompile Include="Library.cpp" />
+    <ClCompile Include="LinkedList.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Preferences.cpp" />
     <ClCompile Include="Server.cpp" />

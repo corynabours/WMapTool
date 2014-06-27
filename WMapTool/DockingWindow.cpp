@@ -31,7 +31,7 @@ void DockingWindow::Initialize(LPCWSTR className, int titleID, LPCWSTR preferenc
 	width = preferences.GetNumericPreference(WidthName);
 	height = preferences.GetNumericPreference(HeightName);
 
-	hWnd = CreateWindow(className, szTitle, WS_CHILD | WS_TILED | WS_CAPTION | WS_THICKFRAME | WS_VISIBLE, xPos, yPos, width, height, application->hWnd, (HMENU)1, application->hInstance, 0);
+	hWnd = CreateWindow(className, szTitle, WS_CHILD | WS_TILED | WS_CAPTION | WS_THICKFRAME | WS_VISIBLE | WS_CLIPSIBLINGS, xPos, yPos, width, height, application->hWnd, (HMENU)1, application->hInstance, 0);
 	if (hWnd == NULL)
 	{
 		DWORD lastError = GetLastError();
@@ -118,9 +118,9 @@ LRESULT DockingWindow::BaseWndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 		return onMove(message, wParam, lParam);
 		break;
-	case WM_MOVE:
+/*	case WM_MOVE:
 		return onMove(message, wParam, lParam);
-		break;
+		break;*/
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
