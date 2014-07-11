@@ -4,12 +4,11 @@
 #include "Preferences.h"
 #include "Resource.h"
 
-Library* Library::_instance = 0;
+Library* Library::_instance = NULL;
 
 Library::Library()
 {
 }
-
 
 Library::~Library()
 {
@@ -18,12 +17,22 @@ Library::~Library()
 
 Library * Library::Instance()
 {
-	if (_instance == 0)
+	if (_instance == NULL)
 	{
 		_instance = new Library();
 		_instance->Initialize(L"MapTool-Library", IDS_LIBRARY_TITLE,L"Library");
 	}
 	return _instance;
+}
+
+void Library::Unload()
+{
+	if (_instance != NULL)
+	{
+		DestroyWindow(_instance->hWnd);
+		delete _instance;
+		_instance = NULL;
+	}
 }
 
 LRESULT Library::onCreate(HWND hWnd, CREATESTRUCT* createStruct)

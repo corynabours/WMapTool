@@ -93,7 +93,6 @@ void ClientMap::ClearFrame()
 
 ClientMap::~ClientMap()
 {
-	//pRenderTarget->Release();
 }
 
 void ClientMap::BeginPaint(PAINTSTRUCT &ps)
@@ -102,20 +101,10 @@ void ClientMap::BeginPaint(PAINTSTRUCT &ps)
 	if (0 == GetUpdateRect(myWindow, &updateArea, false)) return;
 	PAINTSTRUCT paintStruct;
 	ClearFrame();
-/*	pRenderTarget->BeginDraw();
-	pRenderTarget->Clear();
-	pRenderTarget->EndDraw();*/
 }
 
 LRESULT CALLBACK ClientMap::ClientMapWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-/*	if (message == WM_LBUTTONDOWN)
-	{
-		int x, y;
-		x = GET_X_LPARAM(lParam);
-		y = GET_Y_LPARAM(lParam);
-		BeginDrag(hWnd, x, y);
-	}*/
 	if (message == WM_PAINT)
 	{
 		PAINTSTRUCT ps;

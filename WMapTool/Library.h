@@ -30,6 +30,7 @@ private:
 	void TreeViewItemSelected(int index);
 public:
 	static Library *Instance();
+	static void Unload();
 protected:
 	Library();
 	~Library();

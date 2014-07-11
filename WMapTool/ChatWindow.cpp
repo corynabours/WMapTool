@@ -49,9 +49,11 @@ LRESULT ChatWindow::onMove(UINT message, WPARAM wParam, LPARAM lParam)
 
 LRESULT ChatWindow::onCreate(HWND hWnd, CREATESTRUCT* createStruct)
 {
+	RECT rect;
+	GetClientRect(hWnd, &rect);
 	Application *application = Application::Instance();
 	static HMODULE msft_mod = LoadLibrary(L"Msftedit.dll");
-	messagePanel = CreateWindow(TEXT("RICHEDIT50W"), NULL, ES_MULTILINE | ES_READONLY | WS_CHILD | WS_VISIBLE |WS_VSCROLL, 0, 0, createStruct->cx, createStruct->cy-50, hWnd, (HMENU)1, application->hInstance, 0);
+	messagePanel = CreateWindow(TEXT("RICHEDIT50W"), NULL, ES_MULTILINE | ES_READONLY | WS_CHILD | WS_VISIBLE | WS_VSCROLL, 0, 0, rect.right, rect.bottom - 50, hWnd, (HMENU)1, application->hInstance, 0);
 	if (messagePanel == NULL)
 	{
 		DWORD lastError = GetLastError();
@@ -62,7 +64,7 @@ LRESULT ChatWindow::onCreate(HWND hWnd, CREATESTRUCT* createStruct)
 		ShowWindow(messagePanel, SW_SHOW);
 		SendMessage(messagePanel, EM_AUTOURLDETECT, WPARAM(AURL_ENABLEURL), 0);
 	}
-	commandPanel = CreateWindow(TEXT("RICHEDIT50W"), NULL, ES_MULTILINE | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER, 0, createStruct->cy - 50, createStruct->cx, 50, hWnd, (HMENU)2, application->hInstance, 0);
+	commandPanel = CreateWindow(TEXT("RICHEDIT50W"), NULL, ES_MULTILINE | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_BORDER, 0, rect.bottom - 50, rect.right, 50, hWnd, (HMENU)2, application->hInstance, 0);
 	if (commandPanel == NULL)
 	{
 		DWORD lastError = GetLastError();
@@ -101,6 +103,7 @@ void ChatWindow::ProcessCommand()
 	int nLength = GetWindowTextLength(commandPanel);
 	TCHAR* text = new TCHAR[nLength+1];
 	memset(text, 0, sizeof(TCHAR)* (nLength+1));
+	nLength = nLength * sizeof(TCHAR);
 	GetWindowText(commandPanel, text, nLength);
 
 	//send the message to the server.
