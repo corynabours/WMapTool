@@ -60,7 +60,8 @@ void Application::LoadWindows()
 	int showLibrary = preferences.GetNumericPreference(L"ShowLibrary");
 	if (showLibrary)
 	{
-		CheckMenuItem((HMENU)1, ID_WINDOW_LIBRARY, MF_CHECKED);
+		HMENU menu = GetMenu(hWnd);
+		CheckMenuItem(menu, ID_WINDOW_LIBRARY, MF_CHECKED);
 		Library * library = Library::Instance();
 	}
 	CurrentMap = ClientMap::Instance();

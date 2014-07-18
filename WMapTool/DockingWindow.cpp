@@ -118,6 +118,8 @@ LRESULT DockingWindow::BaseWndProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 		return onMove(message, wParam, lParam);
 		break;
+	case WM_COMMAND:
+		return onCommand(message, wParam, lParam);
 /*	case WM_MOVE:
 		return onMove(message, wParam, lParam);
 		break;*/
@@ -183,6 +185,11 @@ LRESULT DockingWindow::onNotify(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 LRESULT DockingWindow::onMove(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+LRESULT DockingWindow::onCommand(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }

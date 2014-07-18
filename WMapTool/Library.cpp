@@ -37,8 +37,10 @@ void Library::Unload()
 
 LRESULT Library::onCreate(HWND hWnd, CREATESTRUCT* createStruct)
 {
+	RECT rect;
+	GetClientRect(hWnd, &rect);
 	Application *application = Application::Instance();
-	libraryListBox = CreateWindowEx(0, WC_TREEVIEW, NULL, TVS_LINESATROOT | TVS_HASBUTTONS | TVS_HASLINES | TVS_SINGLEEXPAND | TVS_FULLROWSELECT | WS_CHILD | WS_VISIBLE | WS_BORDER, 0, 0, createStruct->cx, createStruct->cy/2, hWnd, (HMENU)1, application->hInstance, 0);
+	libraryListBox = CreateWindowEx(0, WC_TREEVIEW, NULL, TVS_LINESATROOT | TVS_HASBUTTONS | TVS_HASLINES | TVS_SINGLEEXPAND | TVS_FULLROWSELECT | WS_CHILD | WS_VISIBLE | WS_BORDER, 0, 0, rect.right - rect.left, (rect.bottom - rect.top)/2, hWnd, (HMENU)1, application->hInstance, 0);
 	if (libraryListBox == NULL)
 	{
 		DWORD lastError = GetLastError();
@@ -50,7 +52,7 @@ LRESULT Library::onCreate(HWND hWnd, CREATESTRUCT* createStruct)
 	InitTreeViewDefaultImageList();
 	FillListBoxFromRegisteredLocations();
 
-	libraryImages = new IconBrowser(hWnd, 0, createStruct->cy / 2, createStruct->cx, createStruct->cy / 2);
+	libraryImages = new IconBrowser(hWnd, 0, ((rect.bottom - rect.top) / 2) + 1, rect.right - rect.left, ((rect.bottom - rect.top) / 2)-1);
 	return 0;
 }
 
@@ -94,7 +96,7 @@ void Library::AddRootLocation(LPWSTR location)
 	tvi.cchTextMax = lstrlen(tvi.pszText);
 	tvi.iImage = closedFolderIndex;
 	tvi.iSelectedImage = closedFolderIndex;
-	tvi.lParam = (LPARAM)RecordFolderLocation(location);
+	tvi.lParam = (LPARAM)RecordFolderLocation(location, 1);
 	tvins.item = tvi;
 	static HTREEITEM hPrev = (HTREEITEM)TVI_FIRST;
 	tvins.hInsertAfter = (HTREEITEM)TVI_ROOT;
@@ -104,7 +106,7 @@ void Library::AddRootLocation(LPWSTR location)
 	AddSubFolders(location, hPrev);
 }
 
-int Library::RecordFolderLocation(LPWSTR location)
+int Library::RecordFolderLocation(LPWSTR location, bool isRoot)
 {
 	if (locationCount)
 	{
@@ -116,6 +118,16 @@ int Library::RecordFolderLocation(LPWSTR location)
 		delete[] locations;
 		locations = tempLocations;
 		locations[locationCount] = location;
+
+		bool *tempLocationIsRoots = new bool[locationCount + 1];
+		for (int index = 0; index < locationCount; index++)
+		{
+			tempLocationIsRoots[index] = locationIsRoot[index];
+		}
+		delete[] locationIsRoot;
+		locationIsRoot = tempLocationIsRoots;
+		locationIsRoot[locationCount] = isRoot;
+
 		locationCount++;
 	}
 	else
@@ -123,6 +135,8 @@ int Library::RecordFolderLocation(LPWSTR location)
 		locationCount = 1;
 		locations = new LPWSTR[1];
 		locations[0] = location;
+		locationIsRoot = new bool[1];
+		locationIsRoot[0] = isRoot;
 	}
 	return locationCount-1;
 }
@@ -154,7 +168,7 @@ void Library::AddSubFolders(LPWSTR location, HTREEITEM hParent)
 					tvi.cchTextMax = lstrlen(tvi.pszText);
 					tvi.iImage = closedFolderIndex;
 					tvi.iSelectedImage = closedFolderIndex;
-					tvi.lParam = (LPARAM)RecordFolderLocation(sublocation);
+					tvi.lParam = (LPARAM)RecordFolderLocation(sublocation, 0);
 					tvins.item = tvi;
 					tvins.hInsertAfter = hPrev;
 					tvins.hParent = hParent;
@@ -177,6 +191,70 @@ LRESULT Library::onMove(UINT message, WPARAM wParam, LPARAM lParam)
 		libraryImages->Move(0, rect.bottom / 2 + 1, rect.right, rect.bottom);
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
+LRESULT Library::onCommand(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	int wmId = LOWORD(wParam);
+	if (wmId == 100)
+	{
+		RemoveLocation();
+	}
+	if (wmId == 101)
+	{
+		DisplayAddLocationDialog();
+	}
+	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+void Library::RemoveLocation()
+{
+	LPWSTR locationToRemove = locations[selectedLocation];
+	Preferences preferences;
+	preferences.SetSubFolder(L"Library");
+	int numLocations = preferences.GetNumericPreference(L"RegisteredLocations");
+	int indexToRemove = 0;
+	for (int index = 0; index < numLocations; index++)
+	{
+		wchar_t locationRegistration[255];
+		wsprintf(locationRegistration, L"location%d", index);
+		LPWSTR location = preferences.GetStringPreference(locationRegistration);
+		if (lstrcmp(locationToRemove, location) == 0)
+		{
+			//found it.
+			indexToRemove = index;
+			break;
+		}
+	}
+
+	for (int index = indexToRemove; index < numLocations - 1; index++)
+	{
+		wchar_t locationRegistration[255];
+		wchar_t locationRegistration2[255];
+		wsprintf(locationRegistration, L"location%d", index + 1);
+		LPWSTR location = preferences.GetStringPreference(locationRegistration);
+		wsprintf(locationRegistration2, L"location%d", index);
+		preferences.SaveStringPreference(locationRegistration2, location);
+	}
+	wchar_t locationRegistration[255];
+	wsprintf(locationRegistration, L"location%d", numLocations - 1);
+	preferences.RemovePreference(locationRegistration);
+	preferences.SaveNumericPreference(L"RegisteredLocations",numLocations - 1);
+	ResetTree();
+}
+
+void Library::ResetTree()
+{
+	TreeView_DeleteAllItems(libraryListBox);
+	delete[] locations;
+	delete[] locationIsRoot;
+	locationCount = 0;
+	selectedLocation = 0;
+	FillListBoxFromRegisteredLocations();
+}
+
+void Library::DisplayAddLocationDialog()
+{
+
+}
 
 LRESULT Library::onNotify(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -191,12 +269,35 @@ LRESULT Library::onNotify(UINT message, WPARAM wParam, LPARAM lParam)
 			nmTreeView = (LPNMTREEVIEW)lParam;
 			TreeViewItemSelected(nmTreeView->itemNew.lParam);
 		}
+		if (nmptr->code == NM_RCLICK)
+		{
+			DisplayPopupMenu();
+		}
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
+void Library::DisplayPopupMenu()
+{
+
+	POINT p; POINT p2;
+	GetCursorPos(&p);
+	p2.x = p.x; p2.y = p.y;
+	ScreenToClient(libraryListBox, &p2);
+	HMENU menu = CreatePopupMenu();
+	UINT flags = MF_STRING;
+	if (locationCount <= 0 || locationIsRoot[selectedLocation] == 0)
+		flags = flags | MF_GRAYED;
+	AppendMenu(menu, flags, 100, L"Remove selected location: ");
+	AppendMenu(menu, MF_STRING, 101, L"Add location");
+	TrackPopupMenu(menu, 0, p.x, p.y, 0, hWnd, NULL);
+	DestroyMenu(menu);
+}
+
+
 void Library::TreeViewItemSelected(int index)
 {
+	selectedLocation = index;
 	LPWSTR location = locations[index];
 	libraryImages->ViewLocation(location);
 }

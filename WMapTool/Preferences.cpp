@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "Preferences.h"
 
+void Preferences::RemovePreference(LPCWSTR keyName)
+{
+	RegDeleteKeyValue(HKEY_CURRENT_USER, currentFolder, keyName);
+}
 void Preferences::SetSubFolder(LPWSTR subfolder)
 {
 	int currentFolderLen = lstrlenW(currentFolder);

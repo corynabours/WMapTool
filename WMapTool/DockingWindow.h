@@ -14,6 +14,7 @@ protected:
 	virtual LRESULT onCreate(HWND hWnd, CREATESTRUCT* createStruct);
 	virtual LRESULT onNotify(UINT message, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT onMove(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual LRESULT onCommand(UINT message, WPARAM wParam, LPARAM lParam);
 	void Initialize(LPCWSTR className, int titleID, LPCWSTR preferencesPrefix);
 	HWND hWnd;
 public:

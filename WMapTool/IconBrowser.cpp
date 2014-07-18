@@ -338,6 +338,7 @@ void IconBrowser::OnScroll(WPARAM wParam)
 	RECT clientRect;
 	GetClientRect(libraryImages, &clientRect);
 	int minimumPosition = (clientRect.bottom - clientRect.top) / 50;
+	if (imagesPerRow == 0) imagesPerRow = 1;  //avoid divide by zero.
 	int maximumPosition = (imagesShown / imagesPerRow);
 	if (maximumPosition < minimumPosition) maximumPosition = minimumPosition;
 
