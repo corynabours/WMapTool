@@ -364,7 +364,9 @@ FIBITMAP *IconBrowser::GetImageAtIndex(int index)
 
 void IconBrowser::BeginDrag(HWND hWnd, int x, int y)
 {
-
+	POINT mouse; 
+	mouse.x = x;  
+	mouse.y = y;
 	RECT clientRect;
 	GetClientRect(hWnd, &clientRect);
 	int imagesPerLine = clientRect.right / 50;
@@ -387,7 +389,7 @@ void IconBrowser::BeginDrag(HWND hWnd, int x, int y)
 	FIBITMAP * scaledBitmap = FreeImage_Rescale(bitmap, 50, 50, FILTER_BSPLINE);
 	FreeImage_FlipVertical(scaledBitmap);
 	HBITMAP hBitmap = _instance->ConvertFIBitmapToHBitmap(hWnd, scaledBitmap);
-	application->BeginDrag(hWnd, hBitmap, x, y, 50, 50);
+	application->BeginDrag(hWnd, hBitmap, mouse.x, mouse.y, 50, 50);
 	DeleteObject(hBitmap);
 	FreeImage_Unload(scaledBitmap);
 }

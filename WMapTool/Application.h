@@ -28,7 +28,7 @@ private:
 	void InitializeApplication();
 	void DragMove(HWND hwnd, int x, int y);
 	void DragEnd();
-
+	LPARAM onSize(WPARAM wParam, LPARAM lParam);
 	HIMAGELIST dragImage = NULL;
 
 

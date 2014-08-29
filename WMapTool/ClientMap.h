@@ -11,6 +11,7 @@ private:
 	void InitGraphicsWindow();
 	void ResetGraphicsWindow();
 	void ClearFrame();
+	void InvalidateFloatingWindows();
 	ATOM RegisterClientMap();
 	HWND myWindow;
 	static LRESULT CALLBACK ClientMapWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -19,6 +20,7 @@ public:
 	ID2D1HwndRenderTarget *pRenderTarget;
 	void BeginPaint(PAINTSTRUCT &ps);
 	static ClientMap* Instance();
+	void Resize();
 private:
 	ClientMap();
 	~ClientMap();

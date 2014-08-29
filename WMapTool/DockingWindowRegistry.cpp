@@ -20,6 +20,18 @@ DockingWindowRegistry::~DockingWindowRegistry()
 		delete dockingWindows;
 }
 
+void DockingWindowRegistry::InvalidateAllWindows()
+{
+	for (int i = 0; i < windowCount; i++)
+	{
+		HWND windowHandle = windowHandles[i];
+		//RECT clientArea;
+		//GetClientRect(windowHandle, &clientArea);
+		//InvalidateRect(windowHandle, &clientArea, true);
+		RedrawWindow(windowHandle, NULL, NULL, RDW_INVALIDATE | RDW_FRAME);
+	}
+}
+
 void DockingWindowRegistry::RegisterWindow(HWND hwnd, DockingWindow* dockingWindow)
 {
 	if (windowCount)

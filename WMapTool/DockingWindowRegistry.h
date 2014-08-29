@@ -11,6 +11,7 @@ public:
 	static DockingWindowRegistry* Instance();
 	void RegisterWindow(HWND windowHandle, DockingWindow *dockingWindow);
 	DockingWindow *GetDockingWindow(HWND hwnd);
+	void InvalidateAllWindows();
 protected:
 	DockingWindowRegistry();
 	~DockingWindowRegistry();

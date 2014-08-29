@@ -3,6 +3,7 @@
 #include "Application.h"
 #include <d3d9.h>
 #include "Resource.h"
+#include "DockingWindowRegistry.h"
 
 extern LPDIRECT3D9 d3d;
 LPDIRECT3DDEVICE9 clientMapDevice = NULL;
@@ -29,7 +30,6 @@ ClientMap::ClientMap()
 
 ATOM ClientMap::RegisterClientMap()
 {
-	//WNDPROC wndProc, LPCWSTR className
 	WNDCLASSEX wcex;
 	Application *application = Application::Instance();
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -54,6 +54,7 @@ ClientMap* ClientMap::Instance()
 	{
 		_instance = new ClientMap();
 		_instance->InitGraphicsWindow();
+		_instance->ClearFrame();
 	}
 	return _instance;
 }
@@ -64,9 +65,9 @@ void ClientMap::InitGraphicsWindow()
 	ZeroMemory(&d3dpp, sizeof(d3dpp));
 	d3dpp.Windowed = TRUE;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	d3dpp.hDeviceWindow = application->hWnd;
+	d3dpp.hDeviceWindow = myWindow;
 	DWORD behaviorFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
-	d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, application->hWnd, behaviorFlags, &d3dpp, &clientMapDevice);
+	d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, myWindow, behaviorFlags, &d3dpp, &clientMapDevice);
 }
 
 void ClientMap::ResetGraphicsWindow()
@@ -76,16 +77,15 @@ void ClientMap::ResetGraphicsWindow()
 	ZeroMemory(&d3dpp, sizeof(d3dpp));
 	d3dpp.Windowed = TRUE;
 	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	d3dpp.hDeviceWindow = application->hWnd;
-	//d3ddev->Reset(&d3dpp);  //this seems to leave the window in a bad state, next call to create a surface will fail.
+	d3dpp.hDeviceWindow = myWindow;
 	DWORD behaviorFlags = D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED;
 	clientMapDevice->Release();
-	d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, application->hWnd, behaviorFlags, &d3dpp, &clientMapDevice);
+	d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, myWindow, behaviorFlags, &d3dpp, &clientMapDevice);
 }
 
 void ClientMap::ClearFrame()
 {
-	clientMapDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
+	clientMapDevice->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 255, 0, 0), 1.0f, 0);
 	clientMapDevice->BeginScene();
 	clientMapDevice->EndScene();
 	clientMapDevice->Present(NULL, NULL, NULL, NULL);
@@ -103,18 +103,32 @@ void ClientMap::BeginPaint(PAINTSTRUCT &ps)
 	ClearFrame();
 }
 
+
+void ClientMap::InvalidateFloatingWindows()
+{
+	DockingWindowRegistry* registry = DockingWindowRegistry::Instance();
+	registry->InvalidateAllWindows();
+}
 LRESULT CALLBACK ClientMap::ClientMapWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	ClientMap *clientMap;
 	if (message == WM_PAINT)
 	{
+		clientMap = ClientMap::Instance();
 		PAINTSTRUCT ps;
 		HDC hdc;
 		hdc = ::BeginPaint(hWnd, &ps);
-		ClientMap *clientMap = ClientMap::Instance();
 		clientMap->BeginPaint(ps);
 		::EndPaint(hWnd, &ps);
 		return 0;
 	}
-
 	return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+void ClientMap::Resize()
+{
+	Application *application = Application::Instance();
+	RECT clientArea;
+	GetClientRect(application->hWnd, &clientArea);
+	MoveWindow(myWindow, 0, 0, clientArea.right, clientArea.bottom, true);
 }

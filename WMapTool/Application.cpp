@@ -160,10 +160,8 @@ LRESULT CALLBACK Application::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	int wmId, wmEvent;
 	RECT location;
 	PAINTSTRUCT ps;
-	HDC hdc;
 	Application *application = Application::Instance();
 	Preferences preferences;
-
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -186,19 +184,11 @@ LRESULT CALLBACK Application::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		}
 		break;
 	case WM_PAINT:
-		/*hdc = ::BeginPaint(hWnd, &ps);
 		if (hWnd == application->hWnd)
 			application->BeginPaint(ps);
-		::EndPaint(hWnd, &ps);*/
-		//SendMessage(ChatWindow::Instance()->hWnd, WM_PAINT, 0, 0);
 		break;
 	case WM_SIZE:
-		switch (wParam)
-		{
-		case SIZE_MAXIMIZED:preferences.SaveNumericPreference(L"Show", (int)3); break;
-		case SIZE_MINIMIZED:break;
-		case SIZE_RESTORED:preferences.SaveNumericPreference(L"Show", (int)1); break;
-		}
+		application->onSize(wParam, lParam);
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	case WM_DESTROY:
 		GetWindowRect(application->hWnd, &location);
@@ -211,6 +201,26 @@ LRESULT CALLBACK Application::WndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
+	return 0;
+}
+
+LPARAM Application::onSize(WPARAM wParam, LPARAM lParam)
+{
+	Preferences preferences;
+	switch (wParam)
+	{
+		case SIZE_MAXIMIZED:
+			preferences.SaveNumericPreference(L"Show", (int)3); 
+			break;
+		case SIZE_MINIMIZED:
+			break;
+		case SIZE_RESTORED:
+			preferences.SaveNumericPreference(L"Show", (int)1); 
+			break;
+	}
+	ClientMap *clientMap = NULL;
+	//clientMap = ClientMap::Instance();
+	//clientMap->Resize();
 	return 0;
 }
 
@@ -241,14 +251,14 @@ void Application::BeginDrag(HWND hWnd, HBITMAP bitmap, int x, int y, int width, 
 	POINT location;
 	location.x = x;
 	location.y = y;
-	MapWindowPoints(hWnd, HWND_DESKTOP, (LPPOINT)&location, 1);
-	MapWindowPoints(HWND_DESKTOP, this->hWnd, (LPPOINT)&location, 1);
+	ClientToScreen(hWnd, (LPPOINT)&location);
+	ScreenToClient(this->hWnd, (LPPOINT)&location);
 
 	dragImage = ImageList_Create(width, height, ILC_COLOR32, 0, 1);
 	ImageList_Add(dragImage, bitmap, NULL);
 
 	ImageList_BeginDrag(dragImage, 0, 0, 0);
-	ImageList_DragEnter(this->hWnd, location.x, location.y);
+	ImageList_DragEnter(this->hWnd, location.x+10, location.y+60);
 }
 
 void Application::DragMove(HWND hwnd,int x, int y)
@@ -257,9 +267,9 @@ void Application::DragMove(HWND hwnd,int x, int y)
 	location.x = x;
 	location.y = y;
 	if (hwnd!=NULL)
-		MapWindowPoints(hwnd, HWND_DESKTOP, (LPPOINT)&location, 1);
-	MapWindowPoints(HWND_DESKTOP, this->hWnd, (LPPOINT)&location, 1);
-	ImageList_DragMove(location.x, location.y);
+		ClientToScreen(hwnd, (LPPOINT)&location);
+	ScreenToClient(this->hWnd, (LPPOINT)&location);
+	ImageList_DragMove(location.x+10, location.y+60);
 }
 
 void Application::DragEnd()
